@@ -43,8 +43,73 @@ namespace Rocky.Controllers
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(obj);
 
+            return View(obj);
+        }
+
+        #region Edit
+
+        // GET - Edit
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var obj = await _db.Category.FindAsync(id);
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            return View(obj);
+        }
+
+        // POST - Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Category obj)
+        {
+            if (ModelState.IsValid)
+            {
+                _db.Category.Update(obj);
+                await _db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+
+            return View(obj);
+        }
+
+        #endregion
+
+        // GET - Delete
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id is null or 0)
+            {
+                return NotFound();
+            }
+
+            var obj = await _db.Category.FindAsync(id);
+
+            if (obj is null)
+                return NotFound();
+
+            return View(obj);
+        }
+
+        // POST - Delete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Category obj)
+        {
+            if (obj is null)
+                return NotFound();
+
+            _db.Category.Remove(obj);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
     }
 }
