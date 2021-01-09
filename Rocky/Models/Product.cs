@@ -11,7 +11,7 @@ namespace Rocky.Models
         [Required]
         public string Name { get; set; }
 
-        public string ShortDesc { get; set; }
+        // public string ShortDesc { get; set; }
         
         public string Description { get; set; }
         
@@ -26,11 +26,10 @@ namespace Rocky.Models
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
 
-        [Display(Name = "Application Type")]
-        public int ApplicationTypeId { get; set; }
+        //[Display(Name = "Application Type")]
+        //public int ApplicationTypeId { get; set; }
         
-        [ForeignKey("ApplicationTypeId")]
-        public virtual ApplicationType ApplicationType { get; set; }
-
+        //[ForeignKey("ApplicationTypeId")]
+        //public virtual ApplicationType ApplicationType { get; set; }
     }
 }
