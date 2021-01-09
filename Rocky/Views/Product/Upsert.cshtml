@@ -2,9 +2,10 @@
 
 
 @{
-	ViewData["Title"] = "Upsert";
-
 	string title = Model.Product.Id is not 0 ? "Edit Product" : "Create Product";
+
+	ViewData["Title"] = title;
+
 }
 
 <form method="post" enctype="multipart/form-data">
@@ -36,6 +37,15 @@
 				</div>
 				<div class="form-group row">
 					<div class="col-4">
+						<label asp-for="Product.ShortDesc"></label>
+					</div>
+					<div class="col-8">
+						<input asp-for="Product.ShortDesc" class="form-control" />
+						<span asp-validation-for="Product.ShortDesc" class="text-danger"></span>
+					</div>
+				</div>
+				<div class="form-group row">
+					<div class="col-4">
 						<label asp-for="Product.Description"></label>
 					</div>
 					<div class="col-8">
@@ -46,7 +56,7 @@
 				<div class="form-group row">
 					<div class="col-4">Image</div>
 					<div class="col-8">
-						<input type="file" name="files" id="uploadBox" multiple class="form-control" />
+						<input type="file" name="files" id="uploadBox" accept="image/*" />
 					</div>
 				</div>
 
@@ -56,9 +66,21 @@
 					</div>
 					<div class="col-8">
 						<select asp-for="Product.CategoryId" asp-items="@Model.CategorySelectList" class="form-control">
-							<option selected>--Select Category</option>
+							<option selected>--Select Category--</option>
 						</select>
 						<span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-4">
+						<label asp-for="Product.ApplicationTypeId"></label>
+					</div>
+					<div class="col-8">
+						<select asp-for="Product.ApplicationTypeId" asp-items="@Model.ApplicationTypeSelectList" class="form-control">
+							<option selected>--Select Application Type--</option>
+						</select>
+						<span asp-validation-for="Product.ApplicationTypeId" class="text-danger"></span>
 					</div>
 				</div>
 

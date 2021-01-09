@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Rocky.Data;
 using Rocky.Models;
@@ -102,12 +103,14 @@ namespace Rocky.Controllers
         // POST - Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Category obj)
+        public async Task<IActionResult> DeletePost(int? id)
         {
-            if (obj is null)
+            var category = await _db.Category.FindAsync(id);
+
+            if (category is null)
                 return NotFound();
 
-            _db.Category.Remove(obj);
+            _db.Category.Remove(category);
             await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

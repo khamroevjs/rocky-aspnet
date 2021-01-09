@@ -30,6 +30,7 @@ namespace Rocky.Controllers
             foreach (var item in collection)
             {
                 item.Category = _db.Category.FirstOrDefault(x => x.Id == item.CategoryId);
+                item.ApplicationType = _db.ApplicationType.FirstOrDefault(x => x.Id == item.ApplicationTypeId);
             }
 
             return View(collection);
@@ -42,6 +43,11 @@ namespace Rocky.Controllers
             {
                 Product = new Product(),
                 CategorySelectList = _db.Category.Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }),
+                ApplicationTypeSelectList = _db.ApplicationType.Select(x=>new SelectListItem
                 {
                     Text = x.Name,
                     Value = x.Id.ToString()
@@ -75,7 +81,7 @@ namespace Rocky.Controllers
 
                 if (productVM.Product.Id == 0)
                 {
-                    //Creating
+                    // Creating
                     string upload = webRootPath + WC.ImagePath;
                     string fileName = Guid.NewGuid().ToString();
                     string extension = Path.GetExtension(files[0].FileName);
@@ -91,7 +97,7 @@ namespace Rocky.Controllers
                 }
                 else
                 {
-                    // Updating
+                    // Editing
                     var objFromDb = _db.Product.AsNoTracking().FirstOrDefault(u => u.Id == productVM.Product.Id);
                     // var objFromDb = _db.Product.AsNoTracking().FirstOrDefault(u => u.Id == productVM.Product.Id);
                     if (files.Any())
@@ -127,36 +133,46 @@ namespace Rocky.Controllers
                 Text = x.Name,
                 Value = x.Id.ToString()
             });
+            productVM.ApplicationTypeSelectList = _db.ApplicationType.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            });
 
             return View(productVM);
         }
 
         // GET - Delete
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id is null or 0)
-            {
-                return NotFound();
-            }
-
-            var obj = await _db.Category.FindAsync(id);
-
-            if (obj is null)
                 return NotFound();
 
-            return View(obj);
+            var product = _db.Product.Include(x => x.Category).Include(x=>x.ApplicationType).FirstOrDefault(x => x.Id == id);
+
+            if (product is null)
+                return NotFound();
+
+            return View(product);
         }
 
         // POST - Delete
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Category obj)
+        public IActionResult DeletePost(int? id)
         {
-            if (obj is null)
+            var product = _db.Product.Find(id);
+
+            if (product is null)
                 return NotFound();
 
-            _db.Category.Remove(obj);
-            await _db.SaveChangesAsync();
+            var image = Path.Combine(_webHostEnvironment.WebRootPath + WC.ImagePath, product.Image);
+            if (System.IO.File.Exists(image))
+                System.IO.File.Delete(image);
+
+
+            _db.Product.Remove(product);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
     }
