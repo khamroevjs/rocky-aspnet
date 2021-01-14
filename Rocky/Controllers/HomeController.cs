@@ -6,21 +6,29 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Rocky.Data;
+using Rocky.Models.ViewModels;
 
 namespace Rocky.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _db;
+        public HomeController(ApplicationDbContext db)
         {
-            _logger = logger;
+            _db = db;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var homeVM = new HomeVM
+            {
+                Products = _db.Product.Include(u => u.Category).Include(u => u.ApplicationType),
+                Categories = _db.Category
+            };
+
+            return View(homeVM);
         }
 
         public IActionResult Privacy()
